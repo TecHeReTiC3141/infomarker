@@ -59,7 +59,12 @@ export default function DocumentDroparea() {
         if (!file) return;
         setIsLoading(true);
         const fileUrl = URL.createObjectURL(file);
-        await getFileText(fileUrl);
+        console.log(fileUrl);
+        try {
+            await getFileText(file.name, fileUrl);
+        } catch (err) {
+            setError((err as Error).message);
+        }
         setIsLoading(false);
 
     }
@@ -93,8 +98,8 @@ export default function DocumentDroparea() {
             {error && <p className="text-error text-center">{error}</p>}
             {file && <button className="btn btn-lg btn-primary"
                              onClick={async () => await handleUpload()} disabled={isLoading}>
-                Отправить файл {isLoading && <span className="loading loading-spinner loading-sm text-info" />}</button>}
+                Отправить файл {isLoading && <span className="loading loading-spinner loading-sm text-info"/>}</button>}
 
-            </div>
-                )
-            }
+        </div>
+    )
+}

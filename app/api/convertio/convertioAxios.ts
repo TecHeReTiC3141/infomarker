@@ -14,16 +14,17 @@ export interface ConvertioConvertResponse {
     status: "ok" | "error",
     data: {
         id: string,
-        type: string,
-        content: string,
-    }
+        minutes:  string,
+    },
+    error: string,
 }
 export interface ConvertioGetResponse {
     code: number,
     status: "ok" | "error",
     data: {
         id: string,
-        minutes: string,
+        type:"base64",
+        content: string,
     }
 }
 

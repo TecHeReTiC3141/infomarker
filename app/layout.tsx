@@ -22,7 +22,7 @@ export default function RootLayout({
     <html className="h-[100vh]" lang="en" data-theme="light">
       <body className={clsx(inter.className, "h-[100vh] flex flex-col")}>
         <Header />
-        <div className="flex-1">
+        <div className="flex-1 container mx-auto">
             {children}
         </div>
         <Footer />
