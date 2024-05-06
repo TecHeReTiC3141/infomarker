@@ -2,7 +2,9 @@
 
 import { FaPlus } from "react-icons/fa6";
 import { ChangeEvent, DragEvent, useRef, useState } from "react";
-import FileIcon from "@/app/components/FileIcon";
+import FileIcon from "@/app/(loadDocument)/components/FileIcon";
+import { getFileText } from "@/app/(loadDocument)/actions";
+import { FadeLoader } from "react-spinners";
 
 
 export default function DocumentDroparea() {
@@ -10,6 +12,8 @@ export default function DocumentDroparea() {
     const [ file, setFile ] = useState<File | null>(null);
 
     const [ error, setError ] = useState<string>("");
+
+    const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
     const [ isDragEntered, setIsDragEntered ] = useState<boolean>(false);
 
@@ -51,8 +55,17 @@ export default function DocumentDroparea() {
         }
     }
 
+    async function handleUpload() {
+        if (!file) return;
+        setIsLoading(true);
+        const fileUrl = URL.createObjectURL(file);
+        await getFileText(fileUrl);
+        setIsLoading(false);
+
+    }
+
     return (
-        <div className="w-full">
+        <div className="w-full flex flex-col items-center gap-y-3">
             <div className="w-full h-96 bg-base-200 hover:bg-base-300 transition-colors duration-200
             border-4 border-dashed border-base-content/60
             flex flex-col gap-y-6 items-center justify-center rounded-xl"
@@ -60,21 +73,28 @@ export default function DocumentDroparea() {
                  onDragLeave={() => setIsDragEntered(false)}
                  onDragOver={event => event.preventDefault()}
                  onDrop={handleDrop}>
-                {file ? <FileIcon file={file} clearFile={() => setFile(null)}/>
+                {isLoading ? <FadeLoader color="#777" loading={isLoading} height={31} width={6} margin={30}
+                                         aria-label="Loading spinner"/> : file ?
+                    <FileIcon file={file} clearFile={() => setFile(null)}/>
                     : <>
                         <FaPlus size={80} onDragEnter={event => event.preventDefault()}/>
                         <p className="text-xs text-center select-none">{isDragEntered ? "Отпустите для загрузки" :
-                            <>"Перетащите в эту область файл для проверки (doc, docx, pdf, txt до 10 МБ)"<br/> "или
+                            <>Перетащите в эту область файл для проверки (doc, docx, pdf, txt до 10 МБ)<br/> или
                                 нажмите на
-                                кпопку"</>}</p>
+                                кпопку</>}</p>
                         {!isDragEntered &&
-                            <button className="btn btn-sm" onClick={() => fileInputRef.current?.click()}>Загрузить
+                            <button className="btn btn-sm bg-base-200"
+                                    onClick={() => fileInputRef.current?.click()}>Загрузить
                                 файл</button>}
                     </>
                 }
             </div>
             <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange}/>
-            {error && <p className="text-error text-center mt-2">{error}</p>}
-        </div>
-    )
-}
+            {error && <p className="text-error text-center">{error}</p>}
+            {file && <button className="btn btn-lg btn-primary"
+                             onClick={async () => await handleUpload()} disabled={isLoading}>
+                Отправить файл {isLoading && <span className="loading loading-spinner loading-sm text-info" />}</button>}
+
+            </div>
+                )
+            }

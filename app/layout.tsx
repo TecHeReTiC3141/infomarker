@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import React from "react";
-import Header from "@/app/components/Header";
+import Header from "@/app/(loadDocument)/components/Header";
+import Footer from "@/app/(loadDocument)/components/Footer";
+import clsx from "clsx";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,10 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
-      <body className={inter.className}>
+    <html className="h-[100vh]" lang="en" data-theme="light">
+      <body className={clsx(inter.className, "h-[100vh] flex flex-col")}>
         <Header />
-        {children}
+        <div className="flex-1">
+            {children}
+        </div>
+        <Footer />
       </body>
     </html>
   );

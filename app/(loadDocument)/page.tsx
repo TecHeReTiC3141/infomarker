@@ -1,4 +1,4 @@
-import DocumentDroparea from "@/app/components/DocumentDroparea";
+import DocumentDroparea from "@/app/(loadDocument)/components/DocumentDroparea";
 import { GrCircleInformation } from "react-icons/gr";
 
 

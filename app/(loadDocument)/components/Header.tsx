@@ -7,7 +7,7 @@ export default function Header() {
 
                 <div className="navbar-start flex gap-x-8 items-center">
                     <Image src="/logo.png" alt="Informarker" width={640} height={480} className="w-80"/>
-                    <h4 className="text-gray-500 text-sm select-none">Маркировка упоминаний иностранных агентов и нежелатеных
+                    <h4 className="text-gray-500 text-xs md:text-sm select-none">Маркировка упоминаний иностранных агентов и нежелательных
                         организаций в ваших текстах</h4>
                 </div>
                 <div className="dropdown dropdown-end">

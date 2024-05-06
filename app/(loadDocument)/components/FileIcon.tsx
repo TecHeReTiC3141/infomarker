@@ -26,7 +26,7 @@ export default function FileIcon({ file, clearFile }: FileIconProps) {
     if (!extension || !(extension in fileIcons)) {
         return <div>Unsupported file</div>;
     }
-    const Icon = fileIcons[extension];
+    const Icon = fileIcons[extension as keyof FileExtensionIcons];
 
     return (
         <div className="bg-base-100 rounded-lg relative max-w-80 p-3 flex flex-col items-center gap-y-3 pt-5">
