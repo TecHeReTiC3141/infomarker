@@ -3,8 +3,8 @@
 import { FaPlus } from "react-icons/fa6";
 import { ChangeEvent, DragEvent, useRef, useState } from "react";
 import FileIcon from "@/app/(loadDocument)/components/FileIcon";
-import { getFileText } from "@/app/(loadDocument)/actions";
 import { FadeLoader } from "react-spinners";
+import {extractTextFromFile} from "@/app/utils/handleUploads";
 
 
 export default function DocumentDroparea() {
@@ -19,28 +19,31 @@ export default function DocumentDroparea() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    function validateFile(file: File): boolean {
+    function validateFile(file: File): void {
         const fileTypes = [ "application/msword", "text/plain", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/pdf" ];
         const maxSize = 10 * 1024 * 1024;
-        if (file === undefined) return false;
+        if (file === undefined) {
+            throw new Error("Пустой файл");
+        }
         if (!fileTypes.includes(file.type)) {
-            setError("Не поддерживаемый тип файла. Проверьте, что файл имеет одно из следующих расширений .doc, .docx, .pdf, .txt");
-            return false;
+            throw new Error("Не поддерживаемый тип файла. Проверьте, что файл имеет одно из следующих расширений .doc, .docx, .pdf, .txt");
         }
         if (file.size > maxSize) {
-            setError("Слишком большой файл. Размер файла должен быть до 10 МБ");
-            return false;
+            throw new Error("Слишком большой файл. Размер файла должен быть до 10 МБ");
         }
-        return true;
     }
+
 
     function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[ 0 ];
         if (!file) return;
         console.log(file?.name, file?.type);
         setError("");
-        if (validateFile(file)) {
+        try {
+            validateFile(file);
             setFile(file);
+        } catch (err) {
+            setError((err as Error).message);
         }
     }
 
@@ -50,18 +53,20 @@ export default function DocumentDroparea() {
         setError("");
         setIsDragEntered(false);
         const file = event.dataTransfer?.files[ 0 ];
-        if (validateFile(file)) {
+        try {
+            validateFile(file);
             setFile(file);
+        } catch (err) {
+            setError((err as Error).message);
         }
     }
 
     async function handleUpload() {
         if (!file) return;
         setIsLoading(true);
-        const fileUrl = URL.createObjectURL(file);
-        console.log(fileUrl);
         try {
-            await getFileText(file.name, fileUrl);
+            const text = await extractTextFromFile(file);
+            console.log(text);
         } catch (err) {
             setError((err as Error).message);
         }
@@ -97,7 +102,7 @@ export default function DocumentDroparea() {
             <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange}/>
             {error && <p className="text-error text-center">{error}</p>}
             {file && <button className="btn btn-lg btn-primary"
-                             onClick={async () => await handleUpload()} disabled={isLoading}>
+                             onClick={handleUpload} disabled={isLoading}>
                 Отправить файл {isLoading && <span className="loading loading-spinner loading-sm text-info"/>}</button>}
 
         </div>

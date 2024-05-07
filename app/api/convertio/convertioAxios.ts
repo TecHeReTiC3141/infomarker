@@ -25,7 +25,8 @@ export interface ConvertioGetResponse {
         id: string,
         type:"base64",
         content: string,
-    }
+    },
+    error: string,
 }
 
 export default convertioAxios;
